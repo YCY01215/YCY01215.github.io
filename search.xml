@@ -1,250 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Welcome to use Hexo Theme Keep</title>
-    <url>/2022/10/25/welcome-to-use-hexo-theme-keep/</url>
-    <content><![CDATA[<p>Welcome to use Hexo Theme Keep</p>
-<p>This is your very first post. Check <a class="link"   href="https://keep-docs.xpoet.cn/" >documentation<i class="fas fa-external-link-alt"></i></a> for more info. If you get any problems when using Keep theme, you can ask me on <a class="link"   href="https://github.com/XPoet/hexo-theme-keep/issues" >GitHub<i class="fas fa-external-link-alt"></i></a>.</p>
-<span id="more"></span>
-
-<p><img  
-                       lazyload
-                       alt="image"
-                       data-src="/images/keep-slogan.svg"
-                        alt="keep-slogan"
-                 ></p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a class="link"   href="https://hexo.io/docs/writing.html" >Writing<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a class="link"   href="https://hexo.io/docs/server.html" >Server<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a class="link"   href="https://hexo.io/docs/generating.html" >Generating<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a class="link"   href="https://hexo.io/docs/one-command-deployment.html" >Deployment<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Keep</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Slice总结</title>
-    <url>/2024/09/07/Slice/</url>
-    <content><![CDATA[<p>参考自小徐先生的<a class="link"   href="https://mp.weixin.qq.com/s?__biz=MzkxMjQzMjA0OQ==&mid=2247484378&idx=1&sn=3d2d4a0055a96c8c76e620371bfec7f7" >博客<i class="fas fa-external-link-alt"></i></a></p>
-<p>go语言中的切片对标于其他编程语言中通俗意义上的“数组”. 切片中的元素存放在一块内存地址连续的区域，使用索引可以快速检索到指定位置的元素；切片长度和容量是可变的，在使用过程中可以根据需要进行扩容.</p>
-<span id="more"></span>
-
-<h3 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h3><p>在runtime&#x2F;slice.go里面可以看到slice的定义，称之为slice header</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// 指向起点的地址</span></span><br><span class="line">    array unsafe.Pointer</span><br><span class="line">    <span class="comment">// 切片长度</span></span><br><span class="line">    <span class="built_in">len</span>   <span class="type">int</span></span><br><span class="line">    <span class="comment">// 切片容量</span></span><br><span class="line">    <span class="built_in">cap</span>   <span class="type">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>其中的核心字段包括：</p>
-<ul>
-<li>array：指向了内存空间地址的起点. 由于 slice 数据存放在连续的内存空间中，后续可以根据索引 index，在起点的基础上快速进行地址偏移，从而定位到目标元素(slice的底层是array)</li>
-<li>len：切片的长度，指的是逻辑意义上 slice 中实际存放了多少个元素</li>
-<li>cap：切片的容量，指的是物理意义上为 slice 分配了足够用于存放多少个元素的空间. 使用 slice 时，要求 cap 永远大于等于 len</li>
-</ul>
-<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>下面先来介绍下切片的初始化操作：</p>
-<ul>
-<li>声明但不初始化</li>
-</ul>
-<p>下面给出的第一个例子，只是声明了 slice 的类型，但是并没有执行初始化操作，即 s 这个字面量此时是一个空指针 nil，并没有完成实际的内存分配操作.</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">var s []int </span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>基于 make 进行初始化</li>
-</ul>
-<p>make 初始化 slice 也分为两种方式, 第一种方式如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s := make([]int,8)</span><br></pre></td></tr></table></figure>
-
-<p>此时会将切片的长度 len 和 容量 cap 同时设置为 8. 需要注意，切片的长度一旦被指定了，就代表对应位置已经被分配了元素，尽管设置的会是对应元素类型下的零值.</p>
-<p>第二种方式，是分别指定切片的长度 len 和容量 cap，代码如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s := make([]int,8,16)</span><br></pre></td></tr></table></figure>
-
-<p>如上所示，代表已经在切片中设置了 8 个元素，会设置为对应类型的零值；cap &#x3D; 16 代表为 slice 分配了用于存放 16 个元素的空间. 需要保证 cap &gt;&#x3D; len. 在 index 为 [len, cap) 的范围内，虽然内存空间已经分配了，但是逻辑意义上不存在元素，直接访问会 panic 报数组访问越界；但是访问 [0,len) 范围内的元素是能够正常访问到的，只不过会是对应元素类型下的零值.</p>
-<ul>
-<li>初始化连带赋值</li>
-</ul>
-<p>初始化 slice 时还能一气呵成完成赋值操作. 如下所示：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s := []int&#123;2,3,4&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这样操作的话，会将 slice 长度 len 和容量 cap 均设置为 3，同时完成对这 3 个元素赋值.</p>
-<p>同样，在runtime&#x2F;slice.go里面可以看见创建slice的函数:</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">makeslice</span><span class="params">(et *_type, <span class="built_in">len</span>, <span class="built_in">cap</span> <span class="type">int</span>)</span></span> unsafe.Pointer &#123;</span><br><span class="line">    <span class="comment">// 根据 cap 结合每个元素的大小，计算出消耗的总容量</span></span><br><span class="line">    mem, overflow := math.MulUintptr(et.size, <span class="type">uintptr</span>(<span class="built_in">cap</span>))</span><br><span class="line">    <span class="keyword">if</span> overflow || mem &gt; maxAlloc || <span class="built_in">len</span> &lt; <span class="number">0</span> || <span class="built_in">len</span> &gt; <span class="built_in">cap</span> &#123;</span><br><span class="line">        <span class="comment">// 倘若容量超限，len 取负值或者 len 超过 cap，直接 panic</span></span><br><span class="line">        mem, overflow := math.MulUintptr(et.size, <span class="type">uintptr</span>(<span class="built_in">len</span>))</span><br><span class="line">        <span class="keyword">if</span> overflow || mem &gt; maxAlloc || <span class="built_in">len</span> &lt; <span class="number">0</span> &#123;</span><br><span class="line">            panicmakeslicelen()</span><br><span class="line">        &#125;</span><br><span class="line">        panicmakeslicecap()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 走 mallocgc 进行内存分配以及切片初始化</span></span><br><span class="line">    <span class="keyword">return</span> mallocgc(mem, et, <span class="literal">true</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>大概意思就是先对cap的长度以及一些参数进行检验，如果不合格的话，就退而求其次，再对len的参数进行检验，然后进行panic。都合格的话就调用malloc进行分配大小</p>
-<h3 id="引用传递"><a href="#引用传递" class="headerlink" title="引用传递"></a>引用传递</h3><p>在go的函数里面都是值传递，slice header也不例外，不过虽然是值传递，但是slice header里面有<code>array unsafe.Pointer</code>，是一个地址，所以本质上还是地址的传递</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;</span><br><span class="line">    array unsafe.Pointer</span><br><span class="line">    <span class="built_in">len</span>   <span class="type">int</span></span><br><span class="line">    <span class="built_in">cap</span>   <span class="type">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="内容截取"><a href="#内容截取" class="headerlink" title="内容截取"></a>内容截取</h3><p>我们可以修改 slice 下标的方式，进行 slice 内容的截取，形如 s[a:b] 的格式，其中 a b 代表切片的索引 index，左闭右开，比如 s[a:b] 对应的范围是 [a,b)，代表的是取切片 slice index &#x3D; a ~ index &#x3D; b-1 范围的内容.</p>
-<p>此外，这里我聊到的 a 和 b 是可以缺省的：</p>
-<ul>
-<li>如果 a 缺省不填则默认取 0 ，则代表从切片起始位置开始截取. 比如 s[:b] 等价于 s[0:b]</li>
-<li>如果 b 缺省不填，则默认取 len(s)，则代表末尾截取到切片长度 len 的终点，比如 s[a:] 等价于 s[a:len(s)]</li>
-<li>a 和 b 均缺省也是可以的，则代表截取整个切片长度的范围，比如 s[:] 等价于 s[0:len(s)]</li>
-</ul>
-<p>在对切片 slice 执行截取操作时，本质上是一次引用传递操作，因为不论如何截取，底层复用的都是同一块内存空间中的数据，只不过，截取动作会创建出一个新的 slice header 实例.</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">b := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">fmt.Printf(<span class="string">&quot;%p \n&quot;</span>, b)</span><br><span class="line">b = b[<span class="number">1</span>:]</span><br><span class="line">fmt.Printf(<span class="string">&quot;%p \n&quot;</span>, b)</span><br><span class="line"></span><br><span class="line"><span class="number">0xc00000e570</span></span><br><span class="line"><span class="number">0xc00000e578</span></span><br></pre></td></tr></table></figure>
-
-<p>这里我们截取之后的地址是原地址+8，也就是偏移了一个int64的位置</p>
-<h3 id="元素追加"><a href="#元素追加" class="headerlink" title="元素追加"></a>元素追加</h3><p>一些 go 的初学者在对 slice 进行初始化以及赋值操作时，有可能会因为对 slice 中 len 和 cap 概念的混淆，最终出现错误的使用方式，形如下面这个代码示例：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">5</span>)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++&#123;</span><br><span class="line">       s = <span class="built_in">append</span>(s, i)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 结果为：</span></span><br><span class="line">    <span class="comment">// s: [0,0,0,0,0,0,1,2,3,4]</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>正确的做法是<code>make([]int,0,5)</code></p>
-<h3 id="切片扩容"><a href="#切片扩容" class="headerlink" title="切片扩容"></a>切片扩容</h3><p>当切片的len超过cap的时候，会进行一次扩容，同样可以在runtime&#x2F;slice.go里面找到<code>growslice</code>的函数</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">growslice</span><span class="params">(et *_type, old slice, <span class="built_in">cap</span> <span class="type">int</span>)</span></span> slice &#123;</span><br><span class="line">    <span class="comment">//... </span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">cap</span> &lt; old.<span class="built_in">cap</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(errorString(<span class="string">&quot;growslice: cap out of range&quot;</span>))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> et.size == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="comment">// 倘若元素大小为 0，则无需分配空间直接返回</span></span><br><span class="line">        <span class="keyword">return</span> slice&#123;unsafe.Pointer(&amp;zerobase), old.<span class="built_in">len</span>, <span class="built_in">cap</span>&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算扩容后数组的容量</span></span><br><span class="line">    newcap := old.<span class="built_in">cap</span></span><br><span class="line">    <span class="comment">// 取原容量两倍的容量数值</span></span><br><span class="line">    doublecap := newcap + newcap</span><br><span class="line">    <span class="comment">// 倘若新的容量大于原容量的两倍，直接取新容量作为数组扩容后的容量</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">cap</span> &gt; doublecap &#123;</span><br><span class="line">        newcap = <span class="built_in">cap</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> threshold = <span class="number">256</span></span><br><span class="line">        <span class="comment">// 倘若原容量小于 256，则扩容后新容量为原容量的两倍</span></span><br><span class="line">        <span class="keyword">if</span> old.<span class="built_in">cap</span> &lt; threshold &#123;</span><br><span class="line">            newcap = doublecap</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 在原容量的基础上，对原容量 * 5/4 并且加上 192</span></span><br><span class="line">            <span class="comment">// 循环执行上述操作，直到扩容后的容量已经大于等于预期的新容量为止</span></span><br><span class="line">            <span class="keyword">for</span> <span class="number">0</span> &lt; newcap &amp;&amp; newcap &lt; <span class="built_in">cap</span> &#123;             </span><br><span class="line">                newcap += (newcap + <span class="number">3</span>*threshold) / <span class="number">4</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 倘若数值越界了，则取预期的新容量 cap 封顶</span></span><br><span class="line">            <span class="keyword">if</span> newcap &lt;= <span class="number">0</span> &#123;</span><br><span class="line">                newcap = <span class="built_in">cap</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> overflow <span class="type">bool</span></span><br><span class="line">    <span class="keyword">var</span> lenmem, newlenmem, capmem <span class="type">uintptr</span></span><br><span class="line">    <span class="comment">// 基于容量，确定新数组容器所需要的内存空间大小 capmem</span></span><br><span class="line">    <span class="keyword">switch</span> &#123;</span><br><span class="line">    <span class="comment">// 倘若数组元素的大小为 1，则新容量大小为 1 * newcap.</span></span><br><span class="line">    <span class="comment">// 同时会针对 span class 进行取整</span></span><br><span class="line">    <span class="keyword">case</span> et.size == <span class="number">1</span>:</span><br><span class="line">        lenmem = <span class="type">uintptr</span>(old.<span class="built_in">len</span>)</span><br><span class="line">        newlenmem = <span class="type">uintptr</span>(<span class="built_in">cap</span>)</span><br><span class="line">        capmem = roundupsize(<span class="type">uintptr</span>(newcap))</span><br><span class="line">        overflow = <span class="type">uintptr</span>(newcap) &gt; maxAlloc</span><br><span class="line">        newcap = <span class="type">int</span>(capmem)</span><br><span class="line">    <span class="comment">// 倘若数组元素为指针类型，则根据指针占用空间结合元素个数计算空间大小</span></span><br><span class="line">    <span class="comment">// 并会针对 span class 进行取整</span></span><br><span class="line">    <span class="keyword">case</span> et.size == goarch.PtrSize:</span><br><span class="line">        lenmem = <span class="type">uintptr</span>(old.<span class="built_in">len</span>) * goarch.PtrSize</span><br><span class="line">        newlenmem = <span class="type">uintptr</span>(<span class="built_in">cap</span>) * goarch.PtrSize</span><br><span class="line">        capmem = roundupsize(<span class="type">uintptr</span>(newcap) * goarch.PtrSize)</span><br><span class="line">        overflow = <span class="type">uintptr</span>(newcap) &gt; maxAlloc/goarch.PtrSize</span><br><span class="line">        newcap = <span class="type">int</span>(capmem / goarch.PtrSize)</span><br><span class="line">    <span class="comment">// 倘若元素大小为 2 的指数，则直接通过位运算进行空间大小的计算   </span></span><br><span class="line">    <span class="keyword">case</span> isPowerOfTwo(et.size):</span><br><span class="line">        <span class="keyword">var</span> shift <span class="type">uintptr</span></span><br><span class="line">        <span class="keyword">if</span> goarch.PtrSize == <span class="number">8</span> &#123;</span><br><span class="line">            <span class="comment">// Mask shift for better code generation.</span></span><br><span class="line">            shift = <span class="type">uintptr</span>(sys.Ctz64(<span class="type">uint64</span>(et.size))) &amp; <span class="number">63</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            shift = <span class="type">uintptr</span>(sys.Ctz32(<span class="type">uint32</span>(et.size))) &amp; <span class="number">31</span></span><br><span class="line">        &#125;</span><br><span class="line">        lenmem = <span class="type">uintptr</span>(old.<span class="built_in">len</span>) &lt;&lt; shift</span><br><span class="line">        newlenmem = <span class="type">uintptr</span>(<span class="built_in">cap</span>) &lt;&lt; shift</span><br><span class="line">        capmem = roundupsize(<span class="type">uintptr</span>(newcap) &lt;&lt; shift)</span><br><span class="line">        overflow = <span class="type">uintptr</span>(newcap) &gt; (maxAlloc &gt;&gt; shift)</span><br><span class="line">        newcap = <span class="type">int</span>(capmem &gt;&gt; shift)</span><br><span class="line">    <span class="comment">// 兜底分支：根据元素大小乘以元素个数</span></span><br><span class="line">    <span class="comment">// 再针对 span class 进行取整     </span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        lenmem = <span class="type">uintptr</span>(old.<span class="built_in">len</span>) * et.size</span><br><span class="line">        newlenmem = <span class="type">uintptr</span>(<span class="built_in">cap</span>) * et.size</span><br><span class="line">        capmem, overflow = math.MulUintptr(et.size, <span class="type">uintptr</span>(newcap))</span><br><span class="line">        capmem = roundupsize(capmem)</span><br><span class="line">        newcap = <span class="type">int</span>(capmem / et.size)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进行实际的切片初始化操作</span></span><br><span class="line">    <span class="keyword">var</span> p unsafe.Pointer</span><br><span class="line">    <span class="comment">// 非指针类型</span></span><br><span class="line">    <span class="keyword">if</span> et.ptrdata == <span class="number">0</span> &#123;</span><br><span class="line">        p = mallocgc(capmem, <span class="literal">nil</span>, <span class="literal">false</span>)</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 指针类型</span></span><br><span class="line">        p = mallocgc(capmem, et, <span class="literal">true</span>)</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将切片的内容拷贝到扩容后的位置 p </span></span><br><span class="line">    memmove(p, old.array, lenmem)</span><br><span class="line">    <span class="keyword">return</span> slice&#123;p, old.<span class="built_in">len</span>, newcap&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>倘若扩容后预期的新容量小于原切片的容量，则 panic</li>
-<li>倘若切片元素大小为 0（元素类型为 struct{}），则直接复用一个全局的 zerobase 实例，直接返回</li>
-<li>倘若预期的新容量超过老容量的两倍，则直接采用预期的新容量</li>
-<li><strong>倘若老容量小于 256，则直接采用老容量的2倍作为新容量</strong></li>
-<li><strong>倘若老容量已经大于等于 256，则在老容量的基础上扩容 1&#x2F;4 的比例并且累加上 192 的数值，持续这样处理，直到得到的新容量已经大于等于预期的新容量为止</strong></li>
-<li>结合 mallocgc 流程中，对内存分配单元 mspan 的等级制度，推算得到实际需要申请的内存空间大小</li>
-<li>调用 mallocgc，对新切片进行内存初始化</li>
-<li>调用 memmove 方法，将老切片中的内容拷贝到新切片中</li>
-<li>返回扩容后的新切片</li>
-</ul>
-<p>根据长度的不同，有不同的扩容策略，主要是为了节约空间。扩容之后相当于创建了一个新的底层数组，并把原来的数组元素拷贝过来</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">	a := []<span class="type">int</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">		a = <span class="built_in">append</span>(a, i)</span><br><span class="line">		fmt.Printf(<span class="string">&quot;%d : %p \n&quot;</span>, i, a)</span><br><span class="line">	&#125;</span><br><span class="line"><span class="number">0</span> : <span class="number">0xc00000a0c8</span></span><br><span class="line"><span class="number">1</span> : <span class="number">0xc00000a110</span></span><br><span class="line"><span class="number">2</span> : <span class="number">0xc0000141c0</span></span><br><span class="line"><span class="number">3</span> : <span class="number">0xc0000141c0</span></span><br><span class="line"><span class="number">4</span> : <span class="number">0xc0000126c0</span></span><br></pre></td></tr></table></figure>
-
-<p>这里的数组经历了1-&gt;2-&gt;4-&gt;8四次扩容，地址也变了四次，并且每一次的差异也很大</p>
-<h3 id="元素删除"><a href="#元素删除" class="headerlink" title="元素删除"></a>元素删除</h3><p>从切片中删除元素的实现思路，本质上和切片内容截取的思路是一致的.</p>
-<p>比如，我们期望删除 slice 中的首个元素，在操作上等同于从切片 index &#x3D; 1 开始向后进行内容截取：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">func Test_slice(t *testing.T)&#123;</span><br><span class="line">    s := []int&#123;0,1,2,3,4&#125;</span><br><span class="line">    // [1,2,3,4]</span><br><span class="line">    s = s[1:]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果我们希望删除 slice 的尾部元素，则操作等价于截取切片内容，并将终点设置在 len(s) - 1 的位置：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := []<span class="type">int</span>&#123;<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;</span><br><span class="line">    <span class="comment">// [0,1,2,3]</span></span><br><span class="line">    s = s[<span class="number">0</span>:<span class="built_in">len</span>(s)<span class="number">-1</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果需要删除 slice 中间的某个元素，操作思路则是采用内容截取加上元素追加的复合操作，可以先截取待删除元素的左侧部分内容，然后在此基础上追加上待删除元素后侧部分的内容：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := []<span class="type">int</span>&#123;<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;</span><br><span class="line">    <span class="comment">// 删除 index = 2 的元素</span></span><br><span class="line">    s = <span class="built_in">append</span>(s[:<span class="number">2</span>],s[<span class="number">3</span>:]...)</span><br><span class="line">    <span class="comment">// s: [0,1,3,4], len: 4, cap: 5</span></span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v, len: %d, cap: %d&quot;</span>, s, <span class="built_in">len</span>(s), <span class="built_in">cap</span>(s))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>最后，当我们需要删除 slice 中的所有元素时，也可以采用切片内容截取的操作方式：s[:0]. 这样操作后，slice header 中的指针 array 仍指向远处，但是逻辑意义上其长度 len 已经等于 0，而容量 cap 则仍保留为原值.</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := []<span class="type">int</span>&#123;<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;</span><br><span class="line">    s = s[:<span class="number">0</span>]</span><br><span class="line">    <span class="comment">// s: [], len: 0, cap: 5</span></span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v, len: %d, cap: %d&quot;</span>, s, <span class="built_in">len</span>(s), <span class="built_in">cap</span>(s))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>不过删除也是更新slice header里面的指针，底层的数组并没有改变</p>
-<h3 id="切片拷贝"><a href="#切片拷贝" class="headerlink" title="切片拷贝"></a>切片拷贝</h3><p>slice 的拷贝可以分为简单拷贝和完整拷贝两种类型.</p>
-<p>要实现简单拷贝，我们只需要对切片的字面量进行赋值传递即可，这样相当于创建出了一个新的 slice header 实例，但是其中的指针 array、容量 cap 和长度 len 仍和老的 slice header 实例相同.</p>
-<p>操作实例如下，最终输出的结果中，s 和 s1 的地址是一致的.</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    s := []<span class="type">int</span>&#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;</span><br><span class="line">    s1 := s</span><br><span class="line">    t.Logf(<span class="string">&quot;address of s: %p, address of s1: %p&quot;</span>, s, s1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里再声明一下，切片的截取操作也属于是简单拷贝，以下面操作代码为例，s 和 s1 会使用同一片内存空间，只不过地址起点位置偏移了一个元素的长度. s1 和 s 的地址，刚好相差 8 个 byte.</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    s := []<span class="type">int</span>&#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;</span><br><span class="line">    s1 := s[<span class="number">1</span>:]</span><br><span class="line">    t.Logf(<span class="string">&quot;address of s: %p, address of s1: %p&quot;</span>, s, s1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>slice 的完整复制，指的是会创建出一个和 slice 容量大小相等的独立的内存区域，并将原 slice 中的元素一一拷贝到新空间中.</p>
-<p>在实现上，slice 的完整复制可以调用系统方法 copy，代码示例如下，通过日志打印的方式可以看到，s 和 s1 的地址是相互独立的：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    s := []<span class="type">int</span>&#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;</span><br><span class="line">    s1 := <span class="built_in">make</span>([]<span class="type">int</span>, <span class="built_in">len</span>(s))</span><br><span class="line">    <span class="built_in">copy</span>(s1, s)</span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v, s1: %v&quot;</span>, s, s1)</span><br><span class="line">    t.Logf(<span class="string">&quot;address of s: %p, address of s1: %p&quot;</span>, s, s1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="一些问题"><a href="#一些问题" class="headerlink" title="一些问题"></a>一些问题</h3><p>前面几个比较简单，后面几个还是挺不错的</p>
-<h4 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>)  </span><br><span class="line">    s = <span class="built_in">append</span>(s,<span class="number">10</span>)</span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v, len of s: %d, cap of s: %d&quot;</span>,s,<span class="built_in">len</span>(s),<span class="built_in">cap</span>(s))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s: [0 0 0 0 0 0 0 0 0 0 10], len of s: 11, cap of s: 20</span><br></pre></td></tr></table></figure>
-
-<p>原因在于：</p>
-<p>学完 2.3 小节的内容，我们了解到，基于 make([]int, 10) 的方式初始化切片的话其长度 len 和容量 cap 均为 10，且前10个元素是已经切实被分配过的（虽然会被填充为零值）. 此时进行 append 操作，会在末尾进行元素追加，由于切片的长度和容量是相等的，因此已经没有剩余可用的空间了，于是会进一步引发切片的扩容操作.</p>
-<p>基于 2.7 小节，我们了解到在切片原容量小于 256 的情况下，扩容时会采用原容量的2倍作为新的容量，于是在新切片中，长度增加为 11，而容量则翻倍变成 20.</p>
-<h4 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">0</span>,<span class="number">10</span>)  </span><br><span class="line">    s = <span class="built_in">append</span>(s,<span class="number">10</span>)</span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v, len of s: %d, cap of s: %d&quot;</span>,s,<span class="built_in">len</span>(s),<span class="built_in">cap</span>(s))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s: [10], len of s: 1, cap of s: 10</span><br></pre></td></tr></table></figure>
-
-<p>原因在于：</p>
-<p>make([]int, 0, 10) 的方式使得切片长度为 0，容量为 10，实际上还有长度为 10 的缓存空间. 于是这一次 append 操作，会直接使用已有的空间，不会引发扩容. 结果中，切片长度从 0 增加为 1，容量则维持为 10 不变.</p>
-<h4 id="问题3"><a href="#问题3" class="headerlink" title="问题3"></a>问题3</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>,<span class="number">11</span>)  </span><br><span class="line">    s = <span class="built_in">append</span>(s,<span class="number">10</span>)</span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v, len of s: %d, cap of s: %d&quot;</span>,s,<span class="built_in">len</span>(s),<span class="built_in">cap</span>(s))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s: [0 0 0 0 0 0 0 0 0 0 10], len of s: 11, cap of s: 11</span><br></pre></td></tr></table></figure>
-
-<p>问题3和问题2类似，由于容量大于长度，因此仍有足够的空间，这次 append 操作不会引发扩容.</p>
-<h4 id="问题4"><a href="#问题4" class="headerlink" title="问题4"></a>问题4</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>,<span class="number">12</span>)  </span><br><span class="line">    s1 := s[<span class="number">8</span>:]</span><br><span class="line">    t.Logf(<span class="string">&quot;s1: %v, len of s1: %d, cap of s1: %d&quot;</span>,s1,<span class="built_in">len</span>(s1),<span class="built_in">cap</span>(s1))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s1: [0 0], len of s1: 2, cap of s1: 4</span><br></pre></td></tr></table></figure>
-
-<p>截取操作会以 s[8] 作为内存空间的起点，截取所得新切片 s1 的长度和容量强依赖于原切片 s 的长度和容量，并在此基础上减去头部 8 个未使用到的单位.</p>
-<h4 id="问题5"><a href="#问题5" class="headerlink" title="问题5"></a>问题5</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>,<span class="number">12</span>)  </span><br><span class="line">    s1 := s[<span class="number">8</span>:<span class="number">9</span>]</span><br><span class="line">    t.Logf(<span class="string">&quot;s1: %v, len of s1: %d, cap of s1: %d&quot;</span>,s1,<span class="built_in">len</span>(s1),<span class="built_in">cap</span>(s1))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s1: [0], len of s1: 1, cap of s1: 4</span><br></pre></td></tr></table></figure>
-
-<p>问题5和问题4类似，我们需要注意虽然 s[8:9] 的截取操作限定了 s1 的右边界，但这只是长度意义上的，对于容量，s1 仍然和 s 保持强关联性.</p>
-<h4 id="问题6"><a href="#问题6" class="headerlink" title="问题6"></a>问题6</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>,<span class="number">12</span>)  </span><br><span class="line">    s1 := s[<span class="number">8</span>:]</span><br><span class="line">    s1[<span class="number">0</span>] = <span class="number">-1</span></span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v&quot;</span>,s)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s: [0 0 0 0 0 0 0 0 -1 0]</span><br></pre></td></tr></table></figure>
-
-<p>s1 是在 s 基础上截取得到的，属于一次引用传递，底层共用同一片内存空间，其中 s[x] 等价于 s1[x+8]. 因此修改了 s1[0] 会直接影响到 s[8] .</p>
-<h4 id="问题7"><a href="#问题7" class="headerlink" title="问题7"></a>问题7</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>,<span class="number">12</span>)  </span><br><span class="line">    v := s[<span class="number">10</span>]</span><br><span class="line">    <span class="comment">// 求问，此时数组访问是否会越界</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案：会发生 panic.</p>
-<p>初始化时设定了切片长度为10，容量为 12. 容量是物理意义上的，但长度是逻辑意义上的，判断是否越界以逻辑意义为准，因此 index &#x3D; 10 已经越界.</p>
-<h4 id="问题8"><a href="#问题8" class="headerlink" title="问题8"></a>问题8</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>,<span class="number">12</span>)  </span><br><span class="line">    s1 := s[<span class="number">8</span>:]</span><br><span class="line">    s1 = <span class="built_in">append</span>(s1,[]<span class="type">int</span>&#123;<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>&#125;...)</span><br><span class="line">    v := s[<span class="number">10</span>]</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// 求问，此时数组访问是否会越界</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案：会发生 panic.</p>
-<ul>
-<li>• 在 s 的基础上截取产生了 s1，此时 s1 和 s 会拥有两个独立的 slice header.</li>
-<li>• 接下来执行 append 操作时，由于 s 预留的空间不足，s1 会发生扩容</li>
-<li>• s1 扩容后，会被迁移到新的空间地址，此时 s1 已经和 s 做到真正意义上的完全独立，意味着修改 s1 不再会影响到 s</li>
-<li>• s 继续维持原本的长度值 10 和容量值 12，因此访问 s[10] 会panic</li>
-</ul>
-<h4 id="问题9"><a href="#问题9" class="headerlink" title="问题9"></a>问题9</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>,<span class="number">12</span>)  </span><br><span class="line">    s1 := s[<span class="number">8</span>:]</span><br><span class="line">    changeSlice(s1)</span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v&quot;</span>,s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">changeSlice</span><span class="params">(s1 []<span class="type">int</span>)</span></span>&#123;</span><br><span class="line">  s1[<span class="number">0</span>] = <span class="number">-1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s: [0 0 0 0 0 0 0 0 -1 0]</span><br></pre></td></tr></table></figure>
-
-<p>切片在传递时属于引用传递，且 s1[0] 和 s[8] 指向同一个元素. 因此在局部方法中，修改了 s1[0] 会直接影响到 s[8] 的内容.</p>
-<h4 id="问题10"><a href="#问题10" class="headerlink" title="问题10"></a>问题10</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">10</span>,<span class="number">12</span>)  </span><br><span class="line">    s1 := s[<span class="number">8</span>:]</span><br><span class="line">    changeSlice(s1)</span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v, len of s: %d, cap of s: %d&quot;</span>,s, <span class="built_in">len</span>(s), <span class="built_in">cap</span>(s))</span><br><span class="line">    t.Logf(<span class="string">&quot;s1: %v, len of s1: %d, cap of s1: %d&quot;</span>,s1, <span class="built_in">len</span>(s1), <span class="built_in">cap</span>(s1))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">changeSlice</span><span class="params">(s1 []<span class="type">int</span>)</span></span>&#123;</span><br><span class="line">  s1 = <span class="built_in">append</span>(s1, <span class="number">10</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s: [0 0 0 0 0 0 0 0 0 0], len of s: 10, cap of s: 12</span><br><span class="line">s1: [0 0], len of s1: 2, cap of s1: 4</span><br></pre></td></tr></table></figure>
-
-<p>虽然切片是引用传递，但是在方法调用时，传递的会是一个新的 slice header.</p>
-<p>因此在局部方法 changeSlice 中，虽然对 s1 进行了 append 操作，但这这会在局部方法中这个独立的 slice header 中生效，不会影响到原方法 Test_slice 当中的 s 和 s1 的长度和容量.</p>
-<h4 id="问题11"><a href="#问题11" class="headerlink" title="问题11"></a>问题11</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := []<span class="type">int</span>&#123;<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;</span><br><span class="line">    s = <span class="built_in">append</span>(s[:<span class="number">2</span>],s[<span class="number">3</span>:]...)</span><br><span class="line">    t.Logf(<span class="string">&quot;s: %v, len: %d, cap: %d&quot;</span>, s, <span class="built_in">len</span>(s), <span class="built_in">cap</span>(s))</span><br><span class="line">    v := s[<span class="number">4</span>] </span><br><span class="line">    <span class="comment">// 是否会数组访问越界</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案：</p>
-<p>输出内容为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s: [0 1 3 4], len: 4, cap: 5</span><br></pre></td></tr></table></figure>
-
-<p>会发生 panic</p>
-<p>执行完上述 append 操作之后，s 的实际长度为 4，容量维持不变为 5. 此时访问 s[4]会发生数组越界的错误.</p>
-<h4 id="问题12"><a href="#问题12" class="headerlink" title="问题12"></a>问题12</h4><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_slice</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">    s := <span class="built_in">make</span>([]<span class="type">int</span>,<span class="number">512</span>)  </span><br><span class="line">    s = <span class="built_in">append</span>(s,<span class="number">1</span>)</span><br><span class="line">    t.Logf(<span class="string">&quot;len of s: %d, cap of s: %d&quot;</span>,<span class="built_in">len</span>(s),<span class="built_in">cap</span>(s))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>答案：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">len: 513, cap: 848</span><br></pre></td></tr></table></figure>
-
-<p>问题11的内容看起来平平无奇，为什么我会选择将其作为压轴呢？原因在于其中暗藏了两个细节，使得这个问题远没有其表面上看上去的那么简单.</p>
-<p>首先，如 2.7 小节中谈到的，由于切片 s 原有容量为 512，已经超过了阈值 256，因此对其进行扩容操作会采用的计算共识为 512 * (512 + 3*256)&#x2F;4 &#x3D; 832</p>
-<p>其次，在真正申请内存空间时，我们会根据切片元素大小乘以容量计算出所需的总空间大小，得出所需的空间为 8byte * 832 &#x3D; 6656 byte</p>
-<p>再进一步，结合分配内存的 mallocgc 流程，为了更好地进行内存空间对其，golang 允许产生一些有限的内部碎片，对拟申请空间的 object 进行大小补齐，最终 6656 byte 会被补齐到 6784 byte 的这一档次. （内存分配时，对象分档以及与 mspan 映射细节可以参考 golang 标准库 runtime&#x2F;sizeclasses.go 文件，也可以阅读我的文章了解更多细节——golang 内存模型与分配机制）</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">// class  bytes/obj  bytes/span  objects  tail waste  max waste  min align</span></span><br><span class="line"><span class="comment">//     1          8        8192     1024           0     87.50%          8</span></span><br><span class="line"><span class="comment">//     2         16        8192      512           0     43.75%         16</span></span><br><span class="line"><span class="comment">//     3         24        8192      341           8     29.24%          </span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="comment">//    48       6528       32768        5         128      6.23%        128</span></span><br><span class="line"><span class="comment">//    49       6784       40960        6         256      4.36%        128 </span></span><br></pre></td></tr></table></figure>
-
-<p>再终，在 mallocgc 流程中，我们为扩容后的新切片分配到了 6784 byte 的空间，于是扩容后实际的新容量为 cap &#x3D; 6784&#x2F;8 &#x3D; 848.</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>slice 是一个长度可变的连续数据序列，在实现上基于一个 slice header 组成，其中包含的字段包括：指向内存空间地址起点的指针 array、一个表示了存储数据长度的 len 和分配空间长度的 cap</li>
-<li>由于 slice 在传递过程中，本质上传递的是 slice header 实例中的内存地址 array，因此属于引用传递</li>
-<li>slice 在扩容时，遵循如下机制:</li>
-<li>如果扩容时预期的新容量超过原容量的两倍，直接取预期的新容量</li>
-<li>如果原容量小于 256，直接取原容量的两倍作为新容量</li>
-<li>如果原容量大于等于 256，在原容量 n 的基础上循环执行 n +&#x3D; (n+3*256)&#x2F;4 的操作，直到 n 大于等于预期新容量，并取 n 作为新容量</li>
-<li>最后还需要友情提示一下，slice 不是并发安全的数据结构，大家在使用时请务必注意并发安全问题.</li>
-</ul>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>Golang</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Leetcode刷题</title>
     <url>/2024/09/07/Leetcode/</url>
     <content><![CDATA[<p>记录自己刷的一些经典的算法题</p>
@@ -279,5 +35,77 @@
       <tags>
         <tag>Leetcode</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Mysql-事务的隔离级别</title>
+    <url>/2024/09/17/Mysql-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</url>
+    <content><![CDATA[<p>Mysql之事物的隔离级别</p>
+<span id="more"></span>
+
+<p>基本上就是看小林coding，然后自己了总结一下（我只是知识的搬运工</p>
+<h2 id="1-事物的四个特性"><a href="#1-事物的四个特性" class="headerlink" title="1.事物的四个特性"></a>1.事物的四个特性</h2><p>首先就是最经典的，事务的ACID四个属性，分别是：</p>
+<ul>
+<li><p><strong>原子性（Atomicity）</strong>：事务的所有操作，要么全部完成，要么全部未完成，也就是执行失败了要回滚，不存在一个中间态，通过<code>undolog</code>来实现</p>
+</li>
+<li><p><strong>一致性（Consistency）</strong>：指的是事务需要保证数据库从一个一致性的状态，转变到另一个一致性的状态，所有的更改需要符合预定义的各种约束</p>
+</li>
+<li><p><strong>隔离性（Isolation）</strong>：多个事务并行执行的时候不会互相干扰，通过<code>MVCC</code>来实现</p>
+</li>
+<li><p><strong>持久性（Durability）</strong>：事务对数据的修改是永久的，通过<code>redolog</code>来实现</p>
+</li>
+</ul>
+<p><strong>一致性</strong>是通过<strong>原子性</strong>+<strong>持久性</strong>+<strong>隔离性</strong>来保证的</p>
+<h2 id="2-事务的四种隔离级别"><a href="#2-事务的四种隔离级别" class="headerlink" title="2.事务的四种隔离级别"></a>2.事务的四种隔离级别</h2><p>在执行事务的时候，会出现四种问题，分别是</p>
+<ul>
+<li><p>脏读：读到了别的事务修改了，但是还没提交的数据</p>
+</li>
+<li><p>不可重复读：在一个事务的生命周期内，读取同一个数据，读到的结果却不一样</p>
+</li>
+<li><p>幻读：查询符合某个条件的<strong>行数</strong>，结果每次查到的<strong>行数</strong>都不一样</p>
+</li>
+</ul>
+<p>针对上面提到的三种问题，就引申出了事物的<strong>四种隔离级别</strong>：</p>
+<ul>
+<li>读未提交：顾名思义，会导致脏读的现象出现</li>
+<li>读已提交：为了解决脏读，只能读到别的事物已经提交之后的结果</li>
+<li>可重复读：针对不可重复读这一问题，在此隔离级别下，一个事务执行过程中看到的数据，一直跟这个事务启动时看到的数据是一致的，是<code>InnoDB</code>引擎的默认隔离级别</li>
+<li>串行化：最高的隔离级别，对记录加锁，访问同一个数据时，前一个事务执行完，后面事务才能执行</li>
+</ul>
+<p>下面具体介绍一下这四种隔离级别的实现方式</p>
+<h3 id="读未提交"><a href="#读未提交" class="headerlink" title="读未提交"></a>读未提交</h3><p>很简单，直接读取最新的数据即可</p>
+<h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><p>在介绍读已提交和可重复读之前，首先需要了解什么是<code>Read View</code>，以及如何通过<code>MVCC</code>来实现事务的隔离</p>
+<p>首先，<code>Read View</code>就是在事务执行之前，对数据拍一张快照，后续的执行都是建立在拍的这张快照之上，<strong>读已提交</strong>在执行每一条指令之前，都会拍一张新的快照，而<strong>可重复读</strong>则是在整个事务的执行期间内，用的都是同一张快照</p>
+<p><code>Read View</code>包含四个字段，分别是</p>
+<ul>
+<li><code>m_ids</code> ：创建快照时，所有未提交的事务id</li>
+<li><code>min_trx_id</code> ：所有活跃事务的最小id</li>
+<li><code>max_trx_id</code> ：所有活跃事务的最大id+1，也就是给下一个事务的id</li>
+<li><code>creator_trx_id</code> ：创建此快照的事务id</li>
+</ul>
+<p>此外，在聚簇索引的每一条行记录当中，包含两个隐藏列，分别是<code>trx_id</code>和<code>roll_pointer</code>，代表当前记录最近一次修改是被哪一个事务所修改，以及当前记录的被修改历史（<code>undolog</code>版本链）</p>
+<p>一个事务在访问记录的时候，首先会根据自己的<code>Read View</code>，查看对应的隐藏列，看这条记录最近一次是被哪个事务id所修改，如果这个事务id</p>
+<ol>
+<li>小于<code>min_trx_id</code>，说明它在创建此快照之前已经被修改提交了，是可见的</li>
+<li>大于等于<code>max_trx_id</code>，说明它是在创建此快照之后，才被一个新的事务修改提交的，对于当前事务而言是不可见的，需要通过版本链找到一个旧版本的且可见的</li>
+<li>如果id介于上述二者之间，需要通过<code>m_ids</code>做一个具体的判断，看它是否可见，不可见的话就需要通过版本链去寻找了</li>
+</ol>
+<h3 id="可重复读"><a href="#可重复读" class="headerlink" title="可重复读"></a>可重复读</h3><p>在每次事务的执行伊始，创建一个快照，执行的过程当中就按照上面的<code>MVCC</code>所说的规则，去找寻最近的一次可见的记录。如果此事务修改了这条记录，则会在版本链上面加上一条最新的记录，id是此事务的id</p>
+<h3 id="读已提交"><a href="#读已提交" class="headerlink" title="读已提交"></a>读已提交</h3><p>读取每个数据时，都生成一个新的<code>Read View</code>，因为在执行每次操作之前都需要知道当前数据库最新的状况，因此不能只基于开始执行的时候拍的那张照片，而是执行每条语句都要拍一张最新的</p>
+<h3 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h3><p>最后说一下幻读这一现象，在<strong>可重复读</strong>这一隔离级别下，既然每次读到的数据都是一样的，那为什么会出现幻读呢？</p>
+<p>针对<strong>快照读</strong>，也就是普通的select语句，由于<code>MVCC</code>的加持，绝大部分情况下是不存在幻读现象的，我们看不到别的事务插入的数据，但是存在一种特殊情况，就是事务A生成了一个快照，之后事务B新插入了一条数据，按理说A是看不到这条数据的，但是A不小心更新了一下这条数据，此时这条数据的隐藏列当中的<code>trx_id</code>就是事务A的id，因为它最近一次更新是事务A执行的，所以后续事务A在使用普通的select语句的时候，就可以看到这条数据了，两次select查到的条数不一样，发生了幻读</p>
+<p>针对<strong>当前读</strong>，也就是<code>select xxx for update</code>，会读取最新的数据，那么别的事务在事务A执行期间提交的修改，就会被A所看到，也就会出现幻读现象</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>八股</tag>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2024/09/16/Redis/</url>
+    <content><![CDATA[]]></content>
   </entry>
 </search>
