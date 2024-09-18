@@ -1,42 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Leetcode刷题</title>
-    <url>/2024/09/07/Leetcode/</url>
-    <content><![CDATA[<p>记录自己刷的一些经典的算法题</p>
-<span id="more"></span>
-
-<h2 id="3-无重复字符的最长子串"><a href="#3-无重复字符的最长子串" class="headerlink" title="3. 无重复字符的最长子串"></a><a class="link"   href="https://leetcode.cn/problems/longest-substring-without-repeating-characters/" >3. 无重复字符的最长子串<i class="fas fa-external-link-alt"></i></a></h2><p><strong>示例 1:</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入: s = &quot;abcabcbb&quot;</span><br><span class="line">输出: 3 </span><br><span class="line">解释: 因为无重复字符的最长子串是 &quot;abc&quot;，所以其长度为 3。</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例 2:</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入: s = &quot;bbbbb&quot;</span><br><span class="line">输出: 1</span><br><span class="line">解释: 因为无重复字符的最长子串是 &quot;b&quot;，所以其长度为 1。</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例 3:</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入: s = &quot;pwwkew&quot;</span><br><span class="line">输出: 3</span><br><span class="line">解释: 因为无重复字符的最长子串是 &quot;wke&quot;，所以其长度为 3。</span><br><span class="line">     请注意，你的答案必须是 子串 的长度，&quot;pwke&quot; 是一个子序列，不是子串。</span><br></pre></td></tr></table></figure>
-
-<p><strong>解答：</strong></p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(s <span class="type">string</span>)</span></span> (res <span class="type">int</span>) &#123;</span><br><span class="line">    cnt := <span class="keyword">map</span>[<span class="type">byte</span>]<span class="type">bool</span>&#123;&#125;</span><br><span class="line">    right := <span class="number">-1</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="keyword">range</span> s &#123;</span><br><span class="line">        <span class="keyword">if</span> i &gt; <span class="number">0</span> &#123;</span><br><span class="line">            <span class="built_in">delete</span>(cnt, s[i<span class="number">-1</span>])</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> right+<span class="number">1</span>&lt;<span class="built_in">len</span>(s) &amp;&amp; !cnt[s[right+<span class="number">1</span>]] &#123;</span><br><span class="line">            right++</span><br><span class="line">            cnt[s[right]] = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        res = max(res, right-i+<span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>思路</strong>：</p>
-<p>这题真的是我写过最典的一道滑动窗口了，常做常新，每次刚做完，然后第二天就忘了</p>
-<img    
-                       lazyload
-                       alt="image"
-                       data-src="https://ycy01215.oss-cn-nanjing.aliyuncs.com/typora/8b635771d5779d17c201d349744e88eb.png"
-                         alt="8b635771d5779d17c201d349744e88eb" style="zoom: 50%;" 
-                 >
-
-<p>思路就是滑动窗口，用一个map记录当前已经存在的字母，right每次一直往右滑动，直至right+1是重复的，停止滑动；然后删除最左边的元素，继续滑动，如果删除的正好是right+1对应的字母，就可以继续滑了，不是的话就继续删。</p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>Leetcode</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Mysql-事务的隔离级别</title>
     <url>/2024/09/17/Mysql-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</url>
     <content><![CDATA[<p>Mysql之事物的隔离级别</p>
@@ -101,6 +65,42 @@
       <tags>
         <tag>八股</tag>
         <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Leetcode刷题</title>
+    <url>/2024/09/07/Leetcode/</url>
+    <content><![CDATA[<p>记录自己刷的一些经典的算法题</p>
+<span id="more"></span>
+
+<h2 id="3-无重复字符的最长子串"><a href="#3-无重复字符的最长子串" class="headerlink" title="3. 无重复字符的最长子串"></a><a class="link"   href="https://leetcode.cn/problems/longest-substring-without-repeating-characters/" >3. 无重复字符的最长子串<i class="fas fa-external-link-alt"></i></a></h2><p><strong>示例 1:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入: s = &quot;abcabcbb&quot;</span><br><span class="line">输出: 3 </span><br><span class="line">解释: 因为无重复字符的最长子串是 &quot;abc&quot;，所以其长度为 3。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入: s = &quot;bbbbb&quot;</span><br><span class="line">输出: 1</span><br><span class="line">解释: 因为无重复字符的最长子串是 &quot;b&quot;，所以其长度为 1。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 3:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入: s = &quot;pwwkew&quot;</span><br><span class="line">输出: 3</span><br><span class="line">解释: 因为无重复字符的最长子串是 &quot;wke&quot;，所以其长度为 3。</span><br><span class="line">     请注意，你的答案必须是 子串 的长度，&quot;pwke&quot; 是一个子序列，不是子串。</span><br></pre></td></tr></table></figure>
+
+<p><strong>解答：</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(s <span class="type">string</span>)</span></span> (res <span class="type">int</span>) &#123;</span><br><span class="line">    cnt := <span class="keyword">map</span>[<span class="type">byte</span>]<span class="type">bool</span>&#123;&#125;</span><br><span class="line">    right := <span class="number">-1</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="keyword">range</span> s &#123;</span><br><span class="line">        <span class="keyword">if</span> i &gt; <span class="number">0</span> &#123;</span><br><span class="line">            <span class="built_in">delete</span>(cnt, s[i<span class="number">-1</span>])</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> right+<span class="number">1</span>&lt;<span class="built_in">len</span>(s) &amp;&amp; !cnt[s[right+<span class="number">1</span>]] &#123;</span><br><span class="line">            right++</span><br><span class="line">            cnt[s[right]] = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        res = max(res, right-i+<span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>思路</strong>：</p>
+<p>这题真的是我写过最典的一道滑动窗口了，常做常新，每次刚做完，然后第二天就忘了</p>
+<img    
+                       lazyload
+                       alt="image"
+                       data-src="https://ycy01215.oss-cn-nanjing.aliyuncs.com/typora/8b635771d5779d17c201d349744e88eb.png"
+                         alt="8b635771d5779d17c201d349744e88eb" style="zoom: 50%;" 
+                 >
+
+<p>思路就是滑动窗口，用一个map记录当前已经存在的字母，right每次一直往右滑动，直至right+1是重复的，停止滑动；然后删除最左边的元素，继续滑动，如果删除的正好是right+1对应的字母，就可以继续滑了，不是的话就继续删。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>Leetcode</tag>
       </tags>
   </entry>
   <entry>
